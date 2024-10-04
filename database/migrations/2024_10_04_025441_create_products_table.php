@@ -17,7 +17,10 @@ return new class extends Migration
             $table->text('description');
             $table->decimal('price',);
             $table->integer('stock');
-            $table->foreignId('user_id')->constrained();
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->unsignedBigInteger('category_id');
+            $table->foreign('category_id')->references('id')->on('categories');
             $table->timestamps();
         });
     }
