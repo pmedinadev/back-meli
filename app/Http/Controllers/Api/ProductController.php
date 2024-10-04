@@ -27,7 +27,8 @@ class ProductController extends Controller
             'description' => $request->description,
             'price' => $request->price,
             'stock' => $request->stock,
-            'user_id' => $request->user_id
+            'user_id' => $request->user_id,
+            'category_id' => $request->category_id
         ]);
 
         $data = [
@@ -51,7 +52,7 @@ class ProductController extends Controller
                 'status' => 404,
                 'error' => 'Product not found'
             ];
-        
+
             return response()->json($data, 404);
         }
 
@@ -59,7 +60,7 @@ class ProductController extends Controller
             'status' => 200,
             'product' => $product
         ];
-        
+
         return response()->json($data, 200);
     }
 
@@ -75,10 +76,10 @@ class ProductController extends Controller
                 'status' => 404,
                 'error' => 'Product not found'
             ];
-        
+
             return response()->json($data, 404);
         }
-        
+
         $product->title = $request->title;
         $product->description = $request->description;
         $product->price = $request->price;
@@ -91,7 +92,7 @@ class ProductController extends Controller
             'message' => 'Product updated successfully',
             'product' => $product
         ];
-        
+
         return response()->json($data, 200);
     }
 
