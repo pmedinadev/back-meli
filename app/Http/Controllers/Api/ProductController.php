@@ -5,16 +5,44 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use Exception;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
+    /**
+     * Handle JSON responses.
+     */
+    private function jsonResponse($status, $data, $code)
+    {
+        return response()->json(array_merge(['status' => $status], $data), $code);
+    }
+
+    /**
+     * Validate request data.
+     */
+    private function validateRequest(Request $request, array $rules)
+    {
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return $this->jsonResponse(400, ['errors' => $validator->errors()], 400);
+        }
+
+        return null;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $products = Product::all();
-        return response()->json($products, 200);
+        try {
+            $products = Product::all();
+            return $this->jsonResponse(200, ['products' => $products], 200);
+        } catch (Exception $e) {
+            return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
+        }
     }
 
     /**
@@ -22,22 +50,25 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $product = Product::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'price' => $request->price,
-            'stock' => $request->stock,
-            'user_id' => $request->user_id,
-            'category_id' => $request->category_id
+        $validationResponse = $this->validateRequest($request, [
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|numeric',
+            'stock' => 'required|integer',
+            'user_id' => 'required|integer|exists:users,id',
+            'category_id' => 'required|integer|exists:categories,id'
         ]);
 
-        $data = [
-            'status' => 201,
-            'message' => 'Product created successfully',
-            'product' => $product
-        ];
+        if ($validationResponse) {
+            return $validationResponse;
+        }
 
-        return response()->json($data, 201);
+        try {
+            $product = Product::create($request->all());
+            return $this->jsonResponse(201, ['message' => 'Product created successfully', 'product' => $product], 201);
+        } catch (Exception $e) {
+            return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
+        }
     }
 
     /**
@@ -45,23 +76,17 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        $product = Product::find($id);
+        try {
+            $product = Product::find($id);
 
-        if (!$product) {
-            $data = [
-                'status' => 404,
-                'error' => 'Product not found'
-            ];
+            if (!$product) {
+                return $this->jsonResponse(404, ['error' => 'Product not found'], 404);
+            }
 
-            return response()->json($data, 404);
+            return $this->jsonResponse(200, ['product' => $product], 200);
+        } catch (Exception $e) {
+            return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
         }
-
-        $data = [
-            'status' => 200,
-            'product' => $product
-        ];
-
-        return response()->json($data, 200);
     }
 
     /**
@@ -69,31 +94,30 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $product = Product::find($id);
+        $validationResponse = $this->validateRequest($request, [
+            'title' => 'sometimes|string|max:255',
+            'description' => 'sometimes|string',
+            'price' => 'sometimes|numeric',
+            'stock' => 'sometimes|integer',
+            'category_id' => 'sometimes|integer|exists:categories,id'
+        ]);
 
-        if (!$product) {
-            $data = [
-                'status' => 404,
-                'error' => 'Product not found'
-            ];
-
-            return response()->json($data, 404);
+        if ($validationResponse) {
+            return $validationResponse;
         }
 
-        $product->title = $request->title;
-        $product->description = $request->description;
-        $product->price = $request->price;
-        $product->stock = $request->stock;
+        try {
+            $product = Product::find($id);
 
-        $product->save();
+            if (!$product) {
+                return $this->jsonResponse(404, ['error' => 'Product not found'], 404);
+            }
 
-        $data = [
-            'status' => 200,
-            'message' => 'Product updated successfully',
-            'product' => $product
-        ];
-
-        return response()->json($data, 200);
+            $product->update($request->all());
+            return $this->jsonResponse(200, ['message' => 'Product updated successfully', 'product' => $product], 200);
+        } catch (Exception $e) {
+            return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
+        }
     }
 
     /**
@@ -101,24 +125,17 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        $product = Product::find($id);
+        try {
+            $product = Product::find($id);
 
-        if(!$product) {
-            $data = [
-                'status' => 404,
-                'error' => 'Product not found'
-            ];
+            if (!$product) {
+                return $this->jsonResponse(404, ['error' => 'Product not found'], 404);
+            }
 
-            return response()->json($data, 404);
+            $product->delete();
+            return $this->jsonResponse(200, ['message' => 'Product deleted successfully'], 200);
+        } catch (Exception $e) {
+            return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
         }
-
-        $product->delete();
-
-        $data = [
-            'status' => 200,
-            'message' => 'Product deleted successfully'
-        ];
-
-        return response()->json($data, 200);
     }
 }
