@@ -21,6 +21,12 @@ return new class extends Migration
                 ->on('categories')
                 ->onDelete('cascade');
         });
+        Schema::table('wishlists', function (Blueprint $table) {
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
+        });
     }
 
     /**
@@ -31,6 +37,9 @@ return new class extends Migration
         Schema::table('products', function (Blueprint $table) {
             $table->dropForeign(['user_id']);
             $table->dropForeign(['category_id']);
+        });
+        Schema::table('wishlists', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
         });
     }
 };

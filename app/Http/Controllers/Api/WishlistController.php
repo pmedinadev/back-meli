@@ -33,19 +33,6 @@ class WishlistController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        try {
-            $wishlist = Wishlist::all();
-            return $this->jsonResponse(200, ['wishlists' => $wishlist], 200);
-        } catch (Exception $e) {
-            return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
-        }
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
@@ -80,33 +67,6 @@ class WishlistController extends Controller
             }
 
             return $this->jsonResponse(200, ['wishlist' => $wishlist], 200);
-        } catch (Exception $e) {
-            return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
-        }
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        $validationResponse = $this->validateRequest($request, [
-            'id' => 'required|integer',
-        ]);
-
-        if ($validationResponse) {
-            return $validationResponse;
-        }
-
-        try {
-            $wishlist = wishlist::find($id);
-
-            if (!$wishlist) {
-                return $this->jsonResponse(404, ['error' => 'wishlist not found'], 404);
-            }
-
-            $wishlist->update($request->all());
-            return $this->jsonResponse(200, ['message' => 'wishlist updated successfully', 'wishlist' => $wishlist], 200);
         } catch (Exception $e) {
             return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
         }
