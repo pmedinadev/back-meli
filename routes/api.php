@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\CategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\WishlistProductController;
 
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
@@ -37,12 +38,16 @@ Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
 
 // Wishlists
 
-Route::get('/wishlists', [WishlistController::class, 'index']);
-
 Route::post('/wishlists', [WishlistController::class, 'store']);
 
 Route::get('/wishlists/{id}', [WishlistController::class, 'show']);
 
-Route::put('/wishlists/{id}', [WishlistController::class, 'update']);
-
 Route::delete('/wishlists/{id}', [WishlistController::class, 'destroy']);
+
+// WishlistProducts
+
+Route::post('/wishlistproducts', [WishlistProductController::class, 'store']);
+
+Route::get('/wishlistproducts/{id}', [WishlistProductController::class, 'show']);
+
+Route::delete('/wishlistproducts/{id}', [WishlistProductController::class, 'destroy']);

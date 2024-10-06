@@ -47,7 +47,7 @@ class WishlistController extends Controller
         }
 
         try {
-            $wishlist = wishlist::create($request->all());
+            $wishlist = Wishlist::create($request->all());
             return $this->jsonResponse(201, ['message' => 'wishlist created successfully', 'wishlist' => $wishlist], 201);
         } catch (Exception $e) {
             return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
@@ -60,7 +60,7 @@ class WishlistController extends Controller
     public function show(string $id)
     {
         try {
-            $wishlist = wishlist::find($id);
+            $wishlist = Wishlist::find($id);
 
             if (!$wishlist) {
                 return $this->jsonResponse(404, ['error' => 'wishlist not found'], 404);
@@ -78,7 +78,7 @@ class WishlistController extends Controller
     public function destroy(string $id)
     {
         try {
-            $wishlist = wishlist::find($id);
+            $wishlist = Wishlist::find($id);
 
             if (!$wishlist) {
                 return $this->jsonResponse(404, ['error' => 'wishlist not found'], 404);
