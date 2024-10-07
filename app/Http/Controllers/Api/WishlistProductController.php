@@ -50,7 +50,7 @@ class WishlistProductController extends Controller
             $wishlistproducts = WishlistProduct::create($request->all());
             return $this->jsonResponse(201, ['message' => 'wishlist products created successfully', 'wishlistproducts' => $wishlistproducts], 201);
         } catch (Exception $e) {
-            return $this->jsonResponse(500, ['error' => $e], 500);
+            return $this->jsonResponse(500, ['error' => "Internal Server Error"], 500);
         }
     }
 
