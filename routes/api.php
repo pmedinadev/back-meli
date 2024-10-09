@@ -1,16 +1,24 @@
 <?php
 
-use App\Http\Controllers\Api\WishlistController;
-use App\Http\Controllers\Api\CategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\WishlistController;
 use App\Http\Controllers\Api\WishlistProductController;
 use App\Http\Controllers\Api\ReviewController;
 
+// Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
-Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
-    return $request->user();
+// Profile routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+    Route::patch('/profile', [ProfileController::class, 'update']);
 });
 
 // Products

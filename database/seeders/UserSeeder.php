@@ -14,55 +14,55 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         User::create([
-            'name' => 'Martín Aispuro',
+            'username' => 'martin_aispuro',
             'email' => 'm.aispuro20@info.uas.edu.mx',
             'password' => Hash::make('12345678'),
         ]);
 
         User::create([
-            'name' => 'Cristopher Gómez',
+            'username' => 'cristopher_gomez',
             'email' => 'c.gomez20@info.uas.edu.mx',
             'password' => Hash::make('12345678'),
         ]);
 
         User::create([
-            'name' => 'Melissa González',
+            'username' => 'melissa_gonzalez',
             'email' => 'my.gonzalez20@info.uas.edu.mx',
             'password' => Hash::make('12345678'),
         ]);
 
         User::create([
-            'name' => 'Ricardo Iriarte',
+            'username' => 'ricardo_iriarte',
             'email' => 'jr.iriarte19@info.uas.edu.mx',
             'password' => Hash::make('12345678'),
         ]);
 
         User::create([
-            'name' => 'Isaac López',
+            'username' => 'isaac_lopez',
             'email' => 'ij.lopez20@info.uas.edu.mx',
             'password' => Hash::make('12345678'),
         ]);
 
         User::create([
-            'name' => 'Kevin Lugo',
+            'username' => 'kevin_lugo',
             'email' => 'kj.lugo20@info.uas.edu.mx',
             'password' => Hash::make('12345678'),
         ]);
 
         User::create([
-            'name' => 'Pablo Medina',
+            'username' => 'pablo_medina',
             'email' => 'jp.medina20@info.uas.edu.mx',
             'password' => Hash::make('12345678'),
         ]);
 
         User::create([
-            'name' => 'José Parra',
+            'username' => 'jose_parra',
             'email' => 'ja.parra20@info.uas.edu.mx',
             'password' => Hash::make('12345678'),
         ]);
 
         User::create([
-            'name' => 'David Sedano',
+            'username' => 'david_sedano',
             'email' => 'ed.sedano20@info.uas.edu.mx',
             'password' => Hash::make('12345678'),
         ]);
