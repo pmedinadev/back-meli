@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\WishlistController;
 use App\Http\Controllers\Api\CategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -33,3 +34,15 @@ Route::get('/categories/{id}', [CategoryController::class, 'show']);
 Route::put('/categories/{id}', [CategoryController::class, 'update']);
 
 Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
+
+// Wishlists
+
+Route::get('/wishlists', [WishlistController::class, 'index']);
+
+Route::post('/wishlists', [WishlistController::class, 'store']);
+
+Route::get('/wishlists/{id}', [WishlistController::class, 'show']);
+
+Route::put('/wishlists/{id}', [WishlistController::class, 'update']);
+
+Route::delete('/wishlists/{id}', [WishlistController::class, 'destroy']);
