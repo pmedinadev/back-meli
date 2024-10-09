@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Category;
+use App\Models\Review;
 use Exception;
 use Illuminate\Support\Facades\Validator;
 
-class CategoryController extends Controller
+class ReviewController extends Controller
 {
-        /**
+    /**
      * Handle JSON responses.
      */
     private function jsonResponse($status, $data, $code)
@@ -31,14 +31,15 @@ class CategoryController extends Controller
 
         return null;
     }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         try {
-            $categories = Category::all();
-            return $this->jsonResponse(200, ['categories' => $categories], 200);
+            $reviews = Review::all();
+            return $this->jsonResponse(200, ['reviews' => $reviews], 200);
         } catch (Exception $e) {
             return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
         }
@@ -50,7 +51,10 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $validationResponse = $this->validateRequest($request, [
-            'name' =>'required|string|max:255',
+            'product_id' => 'integer|exists:products,id',
+            'user_id' => 'integer|exists:users,id',
+            'rate' => 'numeric|between:0,5',
+            'review' => 'string|max:255'
         ]);
 
         if ($validationResponse) {
@@ -58,10 +62,10 @@ class CategoryController extends Controller
         }
 
         try {
-            $category = Category::create($request->all());
-            return $this->jsonResponse(201, ['message' => 'Category created successfully', 'category' => $category], 201);
+            $review = Review::create($request->all());
+            return $this->jsonResponse(201, ['message' => 'Product created successfully', 'product' => $review], 201);
         } catch (Exception $e) {
-            return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
+            return $this->jsonResponse(500, ['error' => $e], 500);
         }
     }
 
@@ -71,13 +75,13 @@ class CategoryController extends Controller
     public function show(string $id)
     {
         try {
-            $category = Category::find($id);
+            $review = Review::find($id);
 
-            if (!$category) {
-                return $this->jsonResponse(404, ['error' => 'Category not found'], 404);
+            if (!$review) {
+                return $this->jsonResponse(404, ['error' => 'Review not found'], 404);
             }
 
-            return $this->jsonResponse(200, ['category' => $category], 200);
+            return $this->jsonResponse(200, ['reviews' => $review], 200);
         } catch (Exception $e) {
             return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
         }
@@ -88,10 +92,11 @@ class CategoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $category = Category::find($id);
-
         $validationResponse = $this->validateRequest($request, [
-            'name' => 'sometimes|string|max:255'
+            'product_id' => 'required|integer|exists:products,id',
+            'user_id' => 'required|integer|exists:users,id',
+            'rate' => 'sometimes|numeric|between:0,5',
+            'review' => 'sometimes|string|max:255'
         ]);
 
         if ($validationResponse) {
@@ -99,14 +104,14 @@ class CategoryController extends Controller
         }
 
         try {
-            $category = Category::find($id);
+            $review = Review::find($id);
 
-            if (!$category) {
-                return $this->jsonResponse(404, ['error' => 'Category not found'], 404);
+            if (!$review) {
+                return $this->jsonResponse(404, ['error' => 'Review not found'], 404);
             }
 
-            $category->update($request->all());
-            return $this->jsonResponse(200, ['message' => 'Category updated successfully', 'category' => $category], 200);
+            $review->update($request->all());
+            return $this->jsonResponse(200, ['message' => 'Review updated successfully', 'review' => $review], 200);
         } catch (Exception $e) {
             return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
         }
@@ -118,14 +123,14 @@ class CategoryController extends Controller
     public function destroy(string $id)
     {
         try {
-            $category = Category::find($id);
+            $review = Review::find($id);
 
-            if (!$category) {
-                return $this->jsonResponse(404, ['error' => 'Category not found'], 404);
+            if (!$review) {
+                return $this->jsonResponse(404, ['error' => 'Review not found'], 404);
             }
 
-            $category->delete();
-            return $this->jsonResponse(200, ['message' => 'Category deleted successfully'], 200);
+            $review->delete();
+            return $this->jsonResponse(200, ['message' => 'Review deleted successfully'], 200);
         } catch (Exception $e) {
             return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
         }
