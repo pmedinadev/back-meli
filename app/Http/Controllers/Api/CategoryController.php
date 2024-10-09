@@ -5,16 +5,43 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Category;
+use Exception;
+use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
+        /**
+     * Handle JSON responses.
+     */
+    private function jsonResponse($status, $data, $code)
+    {
+        return response()->json(array_merge(['status' => $status], $data), $code);
+    }
+
+    /**
+     * Validate request data.
+     */
+    private function validateRequest(Request $request, array $rules)
+    {
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return $this->jsonResponse(400, ['errors' => $validator->errors()], 400);
+        }
+
+        return null;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $categories = Category::all();
-        return response()->json($categories, 200);
+        try {
+            $categories = Category::all();
+            return $this->jsonResponse(200, ['categories' => $categories], 200);
+        } catch (Exception $e) {
+            return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
+        }
     }
 
     /**
@@ -22,17 +49,20 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $category = Category::create([
-            'name' => $request->name
+        $validationResponse = $this->validateRequest($request, [
+            'name' =>'required|string|max:255',
         ]);
 
-        $data = [
-            'status' => 201,
-            'message' => 'Category created successfully!',
-            'category' => $category
-        ];
+        if ($validationResponse) {
+            return $validationResponse;
+        }
 
-        return response()->json($data, 201);
+        try {
+            $category = Category::create($request->all());
+            return $this->jsonResponse(201, ['message' => 'Category created successfully', 'category' => $category], 201);
+        } catch (Exception $e) {
+            return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
+        }
     }
 
     /**
@@ -40,23 +70,17 @@ class CategoryController extends Controller
      */
     public function show(string $id)
     {
-        $category = Category::find($id);
+        try {
+            $category = Category::find($id);
 
-        if(!$category) {
-            $data = [
-                'status' => 404,
-                'error' => 'Category not found'
-            ];
+            if (!$category) {
+                return $this->jsonResponse(404, ['error' => 'Category not found'], 404);
+            }
 
-            return response()->json($data, 404);
+            return $this->jsonResponse(200, ['category' => $category], 200);
+        } catch (Exception $e) {
+            return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
         }
-
-        $data = [
-            'status' => 200,
-            'student' => $category
-        ];
-
-        return response()->json($data, 200);
     }
 
     /**
@@ -66,26 +90,26 @@ class CategoryController extends Controller
     {
         $category = Category::find($id);
 
-        if(!$category) {
-            $data = [
-                'status' => 404,
-                'error' => 'Category not found'
-            ];
+        $validationResponse = $this->validateRequest($request, [
+            'name' => 'sometimes|string|max:255'
+        ]);
 
-            return response()->json($data, 404);
+        if ($validationResponse) {
+            return $validationResponse;
         }
 
-        $category->name = $request->name;
+        try {
+            $category = Category::find($id);
 
-        $category->save();
+            if (!$category) {
+                return $this->jsonResponse(404, ['error' => 'Category not found'], 404);
+            }
 
-        $data = [
-            'status' => 200,
-            'message' => 'Category updated successfully!',
-            'student' => $category
-        ];
-
-        return response()->json($data, 200);
+            $category->update($request->all());
+            return $this->jsonResponse(200, ['message' => 'Category updated successfully', 'category' => $category], 200);
+        } catch (Exception $e) {
+            return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
+        }
     }
 
     /**
@@ -93,24 +117,17 @@ class CategoryController extends Controller
      */
     public function destroy(string $id)
     {
-        $category = Category::find($id);
+        try {
+            $category = Category::find($id);
 
-        if(!$category) {
-            $data = [
-                'status' => 404,
-                'error' => 'Category not found'
-            ];
+            if (!$category) {
+                return $this->jsonResponse(404, ['error' => 'Category not found'], 404);
+            }
 
-            return response()->json($data, 404);
+            $category->delete();
+            return $this->jsonResponse(200, ['message' => 'Category deleted successfully'], 200);
+        } catch (Exception $e) {
+            return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
         }
-
-        $category->delete();
-
-        $data = [
-            'status' => 200,
-            'message' => 'Category deleted successfully!'
-        ];
-
-        return response()->json($data, 200);
     }
 }
