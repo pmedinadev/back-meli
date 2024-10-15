@@ -13,127 +13,127 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         Category::create([
-            'name' => 'Agriculture',
+            'name' => 'Accesorios para Vehículos',
         ]);
 
         Category::create([
-            'name' => 'Antiques and Collections',
+            'name' => 'Agro',
         ]);
 
         Category::create([
-            'name' => 'Art, Stationery and Haberdashery',
+            'name' => 'Alimentos y Bebidas',
         ]);
         
         Category::create([
-            'name' => 'Babies',
+            'name' => 'Animales y Mascotas',
         ]);
 
         Category::create([
-            'name' => 'Beauty and Personal Care',
+            'name' => 'Antigüedades y Colecciones',
         ]);
 
         Category::create([
-            'name' => 'Books, Magazines and Comics',
+            'name' => 'Arte, Papelería y Mercería',
         ]);
 
         Category::create([
-            'name' => 'Cameras and Accessories',
+            'name' => 'Autos, Motos y Otros',
         ]);
 
         Category::create([
-            'name' => 'Cars, Motorcycles and Others',
+            'name' => 'Bebés',
         ]);
 
         Category::create([
-            'name' => 'Cellphones and Telephony',
+            'name' => 'Belleza y Cuidado Personal',
         ]);
 
         Category::create([
-            'name' => 'Clothing, Bags and Footwear',
+            'name' => 'Cámaras y Accesorios',
         ]);
 
         Category::create([
-            'name' => 'Computing',
+            'name' => 'Celulares y Telefonía',
         ]);
 
         Category::create([
-            'name' => 'Consoles and Video Games',
+            'name' => 'Computación',
         ]);
 
         Category::create([
-            'name' => 'Construction',
+            'name' => 'Consolas y Videojuegos',
         ]);
 
         Category::create([
-            'name' => 'Electronics, Audio and Video',
+            'name' => 'Construcción',
         ]);
 
         Category::create([
-            'name' => 'Food and Beverages',
+            'name' => 'Deportes y Fitness',
         ]);
 
         Category::create([
-            'name' => 'Games and Toys',
+            'name' => 'Electrodomésticos',
         ]);
 
         Category::create([
-            'name' => 'Health and Medical Equipment',
+            'name' => 'Electrónica, Audio y Video',
         ]);
 
         Category::create([
-            'name' => 'Home Appliances',
+            'name' => 'Herramientas',
         ]);
 
         Category::create([
-            'name' => 'Home, Furniture and Garden',
+            'name' => 'Hogar, Muebles y Jardín',
         ]);
 
         Category::create([
-            'name' => 'Industries and Offices',
+            'name' => 'Industrias y Oficinas',
         ]);
 
         Category::create([
-            'name' => 'Jewelry and Watches',
+            'name' => 'Inmuebles',
         ]);
 
         Category::create([
-            'name' => 'Musical Instruments',
+            'name' => 'Instrumentos Musicales',
         ]);
 
         Category::create([
-            'name' => 'Music, Movies and Series',
+            'name' => 'Joyas y Relojes',
         ]);
 
         Category::create([
-            'name' => 'Party Supplies and Favors',
+            'name' => 'Juegos y Juguetes',
         ]);
 
         Category::create([
-            'name' => 'Pets and Animals',
+            'name' => 'Libros, Revistas y Comics',
         ]);
 
         Category::create([
-            'name' => 'Real Estate',
+            'name' => 'Música, Películas y Series',
         ]);
 
         Category::create([
-            'name' => 'Services',
+            'name' => 'Recuerdos, Cotillón y Fiestas',
         ]);
 
         Category::create([
-            'name' => 'Sports and Fitness',
+            'name' => 'Ropa, Bolsas y Calzado',
         ]);
 
         Category::create([
-            'name' => 'Tools',
+            'name' => 'Salud y Equipamiento Médico',
         ]);
 
         Category::create([
-            'name' => 'Vehicle Accessories',
+            'name' => 'Servicios',
         ]);
 
         Category::create([
-            'name' => 'Other Categories',
+            'name' => 'Otras Categorías',
         ]);
     }
 }
