@@ -24,7 +24,8 @@ class ProfileUpdateRequest extends FormRequest
                 'email',
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id)
-            ]
+            ],
+            'identity_document' => ['sometimes', 'string', 'max:18'],
         ];
     }
 }
