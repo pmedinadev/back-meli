@@ -61,19 +61,12 @@ Route::get('/reviews/{id}', [ReviewController::class, 'show']);
 Route::patch('/reviews/{id}', [ReviewController::class, 'update']);
 Route::delete('/reviews/{id}', [ReviewController::class, 'destroy']);
 
-
 // Cart
-
 Route::post('/carts', [CartController::class, 'store']);
-
 Route::get('/carts/{id}', [CartController::class, 'show']);
 
 // Cart Product
-
 Route::post('/cartproducts', [CartProductController::class, 'store']);
-
 Route::get('/cartproducts/{id}', [CartProductController::class, 'show']);
-
 Route::patch('/cartproducts/{id}', [CartProductController::class, 'update']);
-
 Route::delete('/cartproducts/{id}', [CartProductController::class, 'destroy']);
