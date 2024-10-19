@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string('display_name')->nullable();
             $table->string('phone')->unique()->nullable();
             $table->string('email')->unique();
+            $table->string('identity_document')->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
