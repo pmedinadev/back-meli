@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\WishlistController;
 use App\Http\Controllers\Api\WishlistProductController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Auth\TokenController;
+use App\Http\Controllers\Api\CartController;
+use App\Http\Controllers\Api\CartProductController;
 
 // Token issuance route for mobile app
 Route::post('/register', [TokenController::class, 'register']);
@@ -58,3 +60,13 @@ Route::post('/reviews', [ReviewController::class, 'store']);
 Route::get('/reviews/{id}', [ReviewController::class, 'show']);
 Route::patch('/reviews/{id}', [ReviewController::class, 'update']);
 Route::delete('/reviews/{id}', [ReviewController::class, 'destroy']);
+
+// Cart
+Route::post('/carts', [CartController::class, 'store']);
+Route::get('/carts/{id}', [CartController::class, 'show']);
+
+// Cart Product
+Route::post('/cartproducts', [CartProductController::class, 'store']);
+Route::get('/cartproducts/{id}', [CartProductController::class, 'show']);
+Route::patch('/cartproducts/{id}', [CartProductController::class, 'update']);
+Route::delete('/cartproducts/{id}', [CartProductController::class, 'destroy']);

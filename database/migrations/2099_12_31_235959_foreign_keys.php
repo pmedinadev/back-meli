@@ -57,6 +57,23 @@ return new class extends Migration
                 ->on('users')
                 ->onDelete('cascade');
         });
+        
+        Schema::table('carts', function (Blueprint $table) {
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
+        });
+        Schema::table('cart_products', function (Blueprint $table) {
+            $table->foreign('cart_id')
+                ->references('id')
+                ->on('carts')
+                ->onDelete('cascade');
+            $table->foreign('product_id')
+                ->references('id')
+                ->on('products')
+                ->onDelete('cascade');
+        });
     }
 
     /**
@@ -85,6 +102,14 @@ return new class extends Migration
         Schema::table('reviews', function (Blueprint $table) {
             $table->dropForeign(['product_id']);
             $table->dropForeign(['user_id']);
+        });
+
+        Schema::table('carts', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+        });
+        Schema::table('cart_products', function (Blueprint $table) {
+            $table->dropForeign(['cart_id']);
+            $table->dropForeign(['product_id']);
         });
     }
 };
