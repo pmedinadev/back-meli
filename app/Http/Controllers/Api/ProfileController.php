@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProfileUpdateRequest;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -55,7 +56,16 @@ class ProfileController extends Controller
     public function update(ProfileUpdateRequest $request): JsonResponse
     {
         $user = $request->user();
-        $user->fill($request->validated());
+        // $user->fill($request->validated());
+        $data = $request->validated();
+
+        // Manejar la subida de la imagen a Cloudinary
+        if ($request->hasFile('avatar')) {
+            $uploadFileUrl = Cloudinary::upload($request->file('avatar')->getRealPath())->getSecurePath();
+            $data['avatar'] = $uploadFileUrl;
+        }
+
+        $user->fill($data);
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
