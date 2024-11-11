@@ -13,12 +13,20 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->text('description');
-            $table->decimal('price',);
-            $table->integer('stock');
+            $table->string('title')->nullable();;
+            $table->text('description')->nullable();;
+            $table->string('condition')->nullable();;
+            $table->integer('stock')->nullable();;
+            $table->string('upc')->nullable();
+            $table->string('sku')->nullable();
+            $table->decimal('price',)->nullable();
+            $table->string('publication_type')->nullable();
+            $table->string('warranty_type')->nullable();
+            $table->integer('warranty_duration')->nullable();
+            $table->string('warranty_duration_type')->nullable();
+            $table->string('status');
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('category_id');
+            $table->unsignedBigInteger('category_id')->nullable();;
             $table->timestamps();
         });
     }

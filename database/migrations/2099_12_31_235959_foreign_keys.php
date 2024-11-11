@@ -17,7 +17,7 @@ return new class extends Migration
                 ->on('roles')
                 ->onDelete('cascade');
         });
-      
+
         Schema::table('products', function (Blueprint $table) {
             $table->foreign('user_id')
                 ->references('id')
@@ -35,7 +35,7 @@ return new class extends Migration
                 ->on('users')
                 ->onDelete('cascade');
         });
-          
+
         Schema::table('wishlist_products', function (Blueprint $table) {
             $table->foreign('wishlist_id')
                 ->references('id')
@@ -46,7 +46,7 @@ return new class extends Migration
                 ->on('products')
                 ->onDelete('cascade');
         });
-          
+
         Schema::table('reviews', function (Blueprint $table) {
             $table->foreign('product_id')
                 ->references('id')
@@ -57,18 +57,26 @@ return new class extends Migration
                 ->on('users')
                 ->onDelete('cascade');
         });
-        
+
         Schema::table('carts', function (Blueprint $table) {
             $table->foreign('user_id')
                 ->references('id')
                 ->on('users')
                 ->onDelete('cascade');
         });
+
         Schema::table('cart_products', function (Blueprint $table) {
             $table->foreign('cart_id')
                 ->references('id')
                 ->on('carts')
                 ->onDelete('cascade');
+            $table->foreign('product_id')
+                ->references('id')
+                ->on('products')
+                ->onDelete('cascade');
+        });
+
+        Schema::table('product_photos', function (Blueprint $table) {
             $table->foreign('product_id')
                 ->references('id')
                 ->on('products')
@@ -84,7 +92,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->dropForeign(['role_id']);
         });
-      
+
         Schema::table('products', function (Blueprint $table) {
             $table->dropForeign(['user_id']);
             $table->dropForeign(['category_id']);
@@ -93,12 +101,12 @@ return new class extends Migration
         Schema::table('wishlists', function (Blueprint $table) {
             $table->dropForeign(['user_id']);
         });
-      
+
         Schema::table('wishlist_products', function (Blueprint $table) {
             $table->dropForeign(['wishlist_id']);
             $table->dropForeign(['product_id']);
         });
-      
+
         Schema::table('reviews', function (Blueprint $table) {
             $table->dropForeign(['product_id']);
             $table->dropForeign(['user_id']);
@@ -107,8 +115,13 @@ return new class extends Migration
         Schema::table('carts', function (Blueprint $table) {
             $table->dropForeign(['user_id']);
         });
+
         Schema::table('cart_products', function (Blueprint $table) {
             $table->dropForeign(['cart_id']);
+            $table->dropForeign(['product_id']);
+        });
+
+        Schema::table('product_photos', function (Blueprint $table) {
             $table->dropForeign(['product_id']);
         });
     }

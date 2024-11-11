@@ -35,10 +35,22 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $products = Product::all();
+            $query = Product::with('photos');
+
+            if ($request->has('status')) {
+                $query->where('status', $request->status);
+            }
+
+            if ($request->has('user_id')) {
+                $query->where('user_id', $request->user_id);
+            }
+
+            // $products = Product::all();
+            $products = $query->orderBy('created_at', 'desc')->get();
+
             return $this->jsonResponse(200, ['products' => $products], 200);
         } catch (Exception $e) {
             return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
@@ -51,12 +63,20 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $validationResponse = $this->validateRequest($request, [
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'price' => 'required|numeric',
-            'stock' => 'required|integer',
+            'title' => 'sometimes|string|max:255',
+            'description' => 'sometimes|string',
+            'condition' => 'sometimes|string',
+            'stock' => 'sometimes|integer',
+            'upc' => 'sometimes|string',
+            'sku' => 'sometimes|string',
+            'price' => 'sometimes|numeric',
+            'publication_type' => 'sometimes|string',
+            'warranty_type' => 'sometimes|string',
+            'warranty_duration' => 'sometimes|integer',
+            'warranty_duration_type' => 'sometimes|string',
+            'status' => 'required|string',
+            'category_id' => 'sometimes|integer|exists:categories,id',
             'user_id' => 'required|integer|exists:users,id',
-            'category_id' => 'required|integer|exists:categories,id'
         ]);
 
         if ($validationResponse) {
@@ -77,7 +97,7 @@ class ProductController extends Controller
     public function show(string $id)
     {
         try {
-            $product = Product::find($id);
+            $product = Product::with('user', 'photos')->find($id);
 
             if (!$product) {
                 return $this->jsonResponse(404, ['error' => 'Product not found'], 404);
@@ -85,7 +105,8 @@ class ProductController extends Controller
 
             return $this->jsonResponse(200, ['product' => $product], 200);
         } catch (Exception $e) {
-            return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
+            return $this->jsonResponse(500, ['error' => $e], 500);
+            // return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
         }
     }
 
@@ -97,9 +118,17 @@ class ProductController extends Controller
         $validationResponse = $this->validateRequest($request, [
             'title' => 'sometimes|string|max:255',
             'description' => 'sometimes|string',
-            'price' => 'sometimes|numeric',
+            'condition' => 'sometimes|string',
             'stock' => 'sometimes|integer',
-            'category_id' => 'sometimes|integer|exists:categories,id'
+            'upc' => 'sometimes|string',
+            'sku' => 'sometimes|string',
+            'price' => 'sometimes|numeric',
+            'publication_type' => 'sometimes|string',
+            'warranty_type' => 'sometimes|string',
+            'warranty_duration' => 'sometimes|integer',
+            'warranty_duration_type' => 'sometimes|string',
+            'status' => 'sometimes|string',
+            'category_id' => 'sometimes|integer|exists:categories,id',
         ]);
 
         if ($validationResponse) {
