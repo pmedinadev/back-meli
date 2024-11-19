@@ -41,6 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // Rutas públicas para productos
+Route::get('/products/search', [ProductController::class, 'search']);
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
 

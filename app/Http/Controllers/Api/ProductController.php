@@ -32,6 +32,23 @@ class ProductController extends Controller
         return null;
     }
 
+    public function search(Request $request)
+    {
+        try {
+            $query = $request->get('q');
+
+            $products = Product::with(['photos', 'user'])
+                ->where('title', 'LIKE', "%{$query}%")
+                ->orWhere('description', 'LIKE', "%{$query}%")
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            return $this->jsonResponse(200, ['products' => $products], 200);
+        } catch (Exception $e) {
+            return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
+        }
+    }
+
     /**
      * Display a listing of the resource.
      */
