@@ -12,30 +12,32 @@ class ProductSeeder extends Seeder
      */
     public function run(): void
     {
+        // ** AGREGAR SUS CATEGORÍAS Y PRODUCTOS **
         $categories = [
-            1 => [ // ID de la categoría
+            1 => [ // Accesorios para Vehículos
                 'titles' => [
-                    // Títulos
+                    // Títulos aquí...
                 ],
                 'descriptions' => [
-                    // Descripciones
+                    // Descripciones aquí...
                 ],
             ],
-            2 => [ // ID de la categoría
+            2 => [ // Agro
                 'titles' => [
-                    // Títulos
+                    // Títulos aquí...
                 ],
                 'descriptions' => [
-                    // Descripciones
+                    // Descripciones aquí...
                 ],
             ],
         ];
 
         foreach ($categories as $categoryId => $data) {
-            for ($i = 0; $i < 30; $i++) { // 30 productos por categoría
+            $totalProducts = count($data['titles']); // Total de títulos disponibles en esta categoría
+            for ($i = 0; $i < $totalProducts; $i++) { // 30 productos por categoría
                 Product::create([
-                    'title' => $data['titles'][array_rand($data['titles'])],
-                    'description' => $data['descriptions'][array_rand($data['descriptions'])],
+                    'title' => $data['titles'][$i],
+                    'description' => $data['descriptions'][$i],
                     'condition' => ['new', 'used', 'reaconditioned'][array_rand(['new', 'used', 'reaconditioned'])],
                     'stock' => rand(10, 200),
                     'price' => rand(100, 5000),
