@@ -52,4 +52,16 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
+
+    public function cart()
+    {
+        return $this->hasOne(Cart::class);
+    }
+
+    protected $appends = ['cart_id'];
+
+    public function getCartIdAttribute()
+    {
+        return $this->cart?->id;
+    }
 }

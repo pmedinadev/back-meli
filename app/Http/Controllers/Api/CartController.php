@@ -59,15 +59,22 @@ class CartController extends Controller
     public function show(string $id)
     {
         try {
-            $cart = Cart::find($id);
+            $cart = Cart::with(['products'])->find($id);
 
             if (!$cart) {
                 return $this->jsonResponse(404, ['error' => 'Cart not found'], 404);
             }
 
-            return $this->jsonResponse(200, ['Cart' => $cart], 200);
+            $cart->products->transform(function ($product) {
+                $product->cart_product_id = $product->pivot->id;
+                $product->quantity = $product->pivot->quantity;
+                unset($product->pivot);
+                return $product;
+            });
+
+            return $this->jsonResponse(200, ['cart' => $cart], 200);
         } catch (Exception $e) {
-            return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
+            return $this->jsonResponse(500, ['error' => $e], 500);
         }
     }
 }
