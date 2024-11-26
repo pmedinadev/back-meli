@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\CartProduct;
+use App\Models\Product;
 use Exception;
 use Illuminate\Support\Facades\Validator;
 
@@ -51,6 +52,25 @@ class CartProductController extends Controller
             $existingCartProduct = CartProduct::where('cart_id', $request->cart_id)
                 ->where('product_id', $request->product_id)
                 ->first();
+
+            $product = Product::find($request->product_id);
+
+            $totalRequestedQuantity = $request->quantity;
+            if ($existingCartProduct) {
+                $totalRequestedQuantity += $existingCartProduct->quantity;
+            }
+
+            if ($totalRequestedQuantity > $product->stock) {
+                return $this->jsonResponse(400, [
+                    'error' => 'No hay suficiente stock disponible'
+                ], 400);
+            }
+
+            if ($product->stock === 1 && $existingCartProduct) {
+                return $this->jsonResponse(400, [
+                    'error' => 'Este producto ya está en tu carrito'
+                ], 400);
+            }
 
             if ($existingCartProduct) {
                 $newQuantity = $existingCartProduct->quantity + $request->quantity;
