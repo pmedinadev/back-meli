@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Cart;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Validator;
 
 class CartController extends Controller
@@ -59,22 +60,30 @@ class CartController extends Controller
     public function show(string $id)
     {
         try {
-            $cart = Cart::with(['products'])->find($id);
-
-            if (!$cart) {
-                return $this->jsonResponse(404, ['error' => 'Cart not found'], 404);
-            }
+            $cart = Cart::with(['products' => function ($query) {
+                $query->select([
+                    'products.id',
+                    'products.title',
+                    'products.price',
+                    'products.stock',
+                    'products.user_id'
+                ])
+                    ->orderBy('cart_products.created_at', 'asc');
+            }])->findOrFail($id);
 
             $cart->products->transform(function ($product) {
                 $product->cart_product_id = $product->pivot->id;
                 $product->quantity = $product->pivot->quantity;
+                $product->created_at = $product->pivot->created_at;
                 unset($product->pivot);
                 return $product;
             });
 
             return $this->jsonResponse(200, ['cart' => $cart], 200);
+        } catch (ModelNotFoundException $e) {
+            return $this->jsonResponse(404, ['error' => 'Cart not found'], 404);
         } catch (Exception $e) {
-            return $this->jsonResponse(500, ['error' => $e], 500);
+            return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
         }
     }
 }
