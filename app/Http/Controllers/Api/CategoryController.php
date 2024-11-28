@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
-        /**
+    /**
      * Handle JSON responses.
      */
     private function jsonResponse($status, $data, $code)
@@ -50,7 +50,7 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $validationResponse = $this->validateRequest($request, [
-            'name' =>'required|string|max:255',
+            'name' => 'required|string|max:255',
         ]);
 
         if ($validationResponse) {
@@ -72,6 +72,23 @@ class CategoryController extends Controller
     {
         try {
             $category = Category::find($id);
+
+            if (!$category) {
+                return $this->jsonResponse(404, ['error' => 'Category not found'], 404);
+            }
+
+            return $this->jsonResponse(200, ['category' => $category], 200);
+        } catch (Exception $e) {
+            return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
+        }
+    }
+
+    public function showBySlug(string $slug)
+    {
+        try {
+            $category = Category::with(['products.photos', 'products.user'])
+                ->where('slug', $slug)
+                ->first();
 
             if (!$category) {
                 return $this->jsonResponse(404, ['error' => 'Category not found'], 404);
