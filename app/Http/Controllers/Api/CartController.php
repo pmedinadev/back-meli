@@ -66,7 +66,8 @@ class CartController extends Controller
                     'products.title',
                     'products.price',
                     'products.stock',
-                    'products.user_id'
+                    'products.slug',
+                    'products.user_id',
                 ])
                     ->orderBy('cart_products.created_at', 'asc');
             }])->findOrFail($id);
@@ -75,6 +76,7 @@ class CartController extends Controller
                 $product->cart_product_id = $product->pivot->id;
                 $product->quantity = $product->pivot->quantity;
                 $product->created_at = $product->pivot->created_at;
+                $product->href = "/{$product->slug}/p/MLP{$product->id}";
                 unset($product->pivot);
                 return $product;
             });

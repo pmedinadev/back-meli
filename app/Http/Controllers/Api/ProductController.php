@@ -82,6 +82,12 @@ class ProductController extends Controller
                 })
                 ->orderBy('created_at', 'desc')
                 ->get();
+            
+            $products = $products->toArray();
+            $products = array_map(function ($product) {
+                $product['href'] = "/{$product['slug']}/p/MLP{$product['id']}";
+                return $product;
+            }, $products);
 
             return $this->jsonResponse(200, ['products' => $products], 200);
         } catch (Exception $e) {
@@ -160,6 +166,9 @@ class ProductController extends Controller
                 return $this->jsonResponse(404, ['error' => 'Product not found'], 404);
             }
 
+            $product = $product->toArray();
+            $product['href'] = "/{$product['slug']}/p/MLP{$product['id']}";
+
             return $this->jsonResponse(200, ['product' => $product], 200);
         } catch (Exception $e) {
             return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
@@ -201,7 +210,7 @@ class ProductController extends Controller
             $product->update($request->all());
             return $this->jsonResponse(200, ['message' => 'Product updated successfully', 'product' => $product], 200);
         } catch (Exception $e) {
-            return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
+            return $this->jsonResponse(500, ['error' => $e], 500);
         }
     }
 

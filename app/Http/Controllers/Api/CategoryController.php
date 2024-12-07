@@ -94,6 +94,12 @@ class CategoryController extends Controller
                 return $this->jsonResponse(404, ['error' => 'Category not found'], 404);
             }
 
+            $category = $category->toArray();
+            $category['products'] = array_map(function ($product) {
+                $product['href'] = "/{$product['slug']}/p/MLP{$product['id']}";
+                return $product;
+            }, $category['products']);
+
             return $this->jsonResponse(200, ['category' => $category], 200);
         } catch (Exception $e) {
             return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
