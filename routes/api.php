@@ -21,7 +21,7 @@ Route::post('/login', [TokenController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     // Obtener usuario autenticado
     Route::get('/user', function (Request $request) {
-        return $request->user();
+        return $request->user()->makeHidden('cart');
     });
 
     // Ruta de cierre de sesión para la aplicación móvil

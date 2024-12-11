@@ -27,7 +27,7 @@ return new class extends Migration
             $table->integer('warranty_duration')->nullable();
             $table->string('warranty_duration_type')->nullable();
             $table->string('status');
-            $table->string('slug')->unique();
+            $table->string('slug');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('category_id')->nullable();
             $table->timestamps();

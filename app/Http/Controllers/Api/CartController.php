@@ -66,6 +66,8 @@ class CartController extends Controller
                     'products.title',
                     'products.price',
                     'products.stock',
+                    'products.shipping_cost',
+                    'products.shipping_type',
                     'products.slug',
                     'products.user_id',
                 ])
