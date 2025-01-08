@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\CartProductController;
 use App\Http\Controllers\Api\ProductPhotoController;
+use App\Http\Controllers\Api\UserAddressController;
 use App\Http\Controllers\Auth\TokenController;
 
 // Emisión de tokens para la aplicación móvil
@@ -38,6 +39,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Rutas protegidas para fotos de productos
     Route::post('/productphotos', [ProductPhotoController::class, 'store']);
     Route::delete('/productphotos/{id}', [ProductPhotoController::class, 'destroy']);
+
+    // Rutas protegidas para direcciones de usuarios
+    Route::apiResource('addresses', UserAddressController::class);
 });
 
 // Rutas públicas para productos
