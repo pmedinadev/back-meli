@@ -82,6 +82,46 @@ return new class extends Migration
                 ->on('products')
                 ->onDelete('cascade');
         });
+
+        Schema::table('user_addresses', function (Blueprint $table) {
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
+        });
+
+        Schema::table('orders', function (Blueprint $table) {
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
+        });
+
+        Schema::table('order_items', function (Blueprint $table) {
+            $table->foreign('order_id')
+                ->references('id')
+                ->on('orders')
+                ->onDelete('cascade');
+            $table->foreign('product_id')
+                ->references('id')
+                ->on('products')
+                ->onDelete('cascade');
+            $table->foreign('seller_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
+        });
+
+        Schema::table('order_shipping', function (Blueprint $table) {
+            $table->foreign('order_id')
+                ->references('id')
+                ->on('orders')
+                ->onDelete('cascade');
+            $table->foreign('address_id')
+                ->references('id')
+                ->on('user_addresses')
+                ->onDelete('cascade');
+        });
     }
 
     /**
@@ -123,6 +163,25 @@ return new class extends Migration
 
         Schema::table('product_photos', function (Blueprint $table) {
             $table->dropForeign(['product_id']);
+        });
+
+        Schema::table('user_addresses', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+        });
+
+        Schema::table('orders', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+        });
+
+        Schema::table('order_items', function (Blueprint $table) {
+            $table->dropForeign(['order_id']);
+            $table->dropForeign(['product_id']);
+            $table->dropForeign(['seller_id']);
+        });
+
+        Schema::table('order_shipping', function (Blueprint $table) {
+            $table->dropForeign(['order_id']);
+            $table->dropForeign(['address_id']);
         });
     }
 };

@@ -2006,6 +2006,8 @@ class ProductSeeder extends Seeder
                     'stock' => rand(10, 200),
                     'price' => rand(100, 5000),
                     'publication_type' => ['free', 'classic', 'premium'][array_rand(['free', 'classic', 'premium'])],
+                    'shipping_cost' => [95.4, 127.2, 159][array_rand([95.4, 127.2, 159])],
+                    'shipping_type' => ['paid_by_buyer', 'paid_by_seller'][array_rand(['paid_by_buyer', 'paid_by_seller'])],
                     'warranty_type' => ['manufacturer', 'seller'][array_rand(['manufacturer', 'seller'])],
                     'warranty_duration' => rand(1, 24),
                     'warranty_duration_type' => ['days', 'months', 'years'][array_rand(['days', 'months', 'years'])],
