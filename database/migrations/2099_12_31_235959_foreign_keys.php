@@ -29,17 +29,17 @@ return new class extends Migration
                 ->onDelete('cascade');
         });
 
-        Schema::table('wishlists', function (Blueprint $table) {
+        Schema::table('favorites', function (Blueprint $table) {
             $table->foreign('user_id')
                 ->references('id')
                 ->on('users')
                 ->onDelete('cascade');
         });
 
-        Schema::table('wishlist_products', function (Blueprint $table) {
-            $table->foreign('wishlist_id')
+        Schema::table('favorite_products', function (Blueprint $table) {
+            $table->foreign('favorite_id')
                 ->references('id')
-                ->on('wishlists')
+                ->on('favorites')
                 ->onDelete('cascade');
             $table->foreign('product_id')
                 ->references('id')
@@ -138,12 +138,12 @@ return new class extends Migration
             $table->dropForeign(['category_id']);
         });
 
-        Schema::table('wishlists', function (Blueprint $table) {
+        Schema::table('favorites', function (Blueprint $table) {
             $table->dropForeign(['user_id']);
         });
 
-        Schema::table('wishlist_products', function (Blueprint $table) {
-            $table->dropForeign(['wishlist_id']);
+        Schema::table('favorite_products', function (Blueprint $table) {
+            $table->dropForeign(['favorite_id']);
             $table->dropForeign(['product_id']);
         });
 

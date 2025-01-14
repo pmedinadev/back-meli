@@ -5,8 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\WishlistController;
-use App\Http\Controllers\Api\WishlistProductController;
+use App\Http\Controllers\Api\FavoriteController;
+use App\Http\Controllers\Api\FavoriteProductController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\CartProductController;
@@ -42,6 +42,16 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Rutas protegidas para direcciones de usuarios
     Route::apiResource('addresses', UserAddressController::class);
+
+    // Rutas protegidas para listas de favoritos
+    Route::post('/favorites', [FavoriteController::class, 'store']);
+    Route::get('/favorites/{id}', [FavoriteController::class, 'show']);
+    Route::delete('/favorites/{id}', [FavoriteController::class, 'destroy']);
+
+    // Rutas protegidas para productos favoritos
+    Route::post('/favoriteproducts', [FavoriteProductController::class, 'store']);
+    Route::get('/favoriteproducts/{id}', [FavoriteProductController::class, 'show']);
+    Route::delete('/favoriteproducts/{id}', [FavoriteProductController::class, 'destroy']);
 });
 
 // Rutas públicas para productos
@@ -56,16 +66,6 @@ Route::get('/categories/{id}', [CategoryController::class, 'show']);
 Route::get('/categories/slug/{slug}', [CategoryController::class, 'showBySlug']);
 Route::put('/categories/{id}', [CategoryController::class, 'update']);
 Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
-
-// Listas de deseos
-Route::post('/wishlists', [WishlistController::class, 'store']);
-Route::get('/wishlists/{id}', [WishlistController::class, 'show']);
-Route::delete('/wishlists/{id}', [WishlistController::class, 'destroy']);
-
-// Relación entre listas de deseos y productos
-Route::post('/wishlistproducts', [WishlistProductController::class, 'store']);
-Route::get('/wishlistproducts/{id}', [WishlistProductController::class, 'show']);
-Route::delete('/wishlistproducts/{id}', [WishlistProductController::class, 'destroy']);
 
 // Opiniones
 Route::get('/reviews', [ReviewController::class, 'index']);
