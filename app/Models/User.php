@@ -58,7 +58,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(Cart::class);
     }
 
-    protected $appends = ['cart_id'];
+    protected $appends = ['cart_id', 'favorite_id'];
 
     public function getCartIdAttribute()
     {
@@ -68,5 +68,15 @@ class User extends Authenticatable implements MustVerifyEmail
     public function addresses()
     {
         return $this->hasMany(UserAddress::class);
+    }
+
+    public function favorite()
+    {
+        return $this->hasOne(Favorite::class);
+    }
+
+    public function getFavoriteIdAttribute()
+    {
+        return $this->favorite?->id;
     }
 }

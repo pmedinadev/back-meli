@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\WishlistProduct;
+use App\Models\FavoriteProduct;
 use Exception;
 use Illuminate\Support\Facades\Validator;
 
-class WishlistProductController extends Controller
+class FavoriteProductController extends Controller
 {
     /**
      * Handle JSON responses.
@@ -38,7 +38,7 @@ class WishlistProductController extends Controller
     public function store(Request $request)
     {
         $validationResponse = $this->validateRequest($request, [
-            'wishlist_id' => 'required|integer|exists:wishlists,id',
+            'favorite_id' => 'required|integer|exists:favorites,id',
             'product_id' => 'required|integer|exists:products,id'
         ]);
 
@@ -47,8 +47,8 @@ class WishlistProductController extends Controller
         }
 
         try {
-            $wishlistproducts = WishlistProduct::create($request->all());
-            return $this->jsonResponse(201, ['message' => 'wishlist products created successfully', 'wishlistproducts' => $wishlistproducts], 201);
+            $favoriteproducts = FavoriteProduct::create($request->all());
+            return $this->jsonResponse(201, ['message' => 'favorite products created successfully', 'favoriteproducts' => $favoriteproducts], 201);
         } catch (Exception $e) {
             return $this->jsonResponse(500, ['error' => "Internal Server Error"], 500);
         }
@@ -60,32 +60,31 @@ class WishlistProductController extends Controller
     public function show(string $id)
     {
         try {
-            $wishlistproducts = WishlistProduct::find($id);
+            $favoriteproducts = FavoriteProduct::find($id);
 
-            if (!$wishlistproducts) {
-                return $this->jsonResponse(404, ['error' => 'wishlist products not found'], 404);
+            if (!$favoriteproducts) {
+                return $this->jsonResponse(404, ['error' => 'favorite products not found'], 404);
             }
 
-            return $this->jsonResponse(200, ['wishlistproducts' => $wishlistproducts], 200);
+            return $this->jsonResponse(200, ['favoriteproducts' => $favoriteproducts], 200);
         } catch (Exception $e) {
             return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
         }
     }
-
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
         try {
-            $wishlistproducts = WishlistProduct::find($id);
+            $favoriteproducts = FavoriteProduct::find($id);
 
-            if (!$wishlistproducts) {
-                return $this->jsonResponse(404, ['error' => 'wishlist products products not found'], 404);
+            if (!$favoriteproducts) {
+                return $this->jsonResponse(404, ['error' => 'favorite products products not found'], 404);
             }
 
-            $wishlistproducts->delete();
-            return $this->jsonResponse(200, ['message' => 'wishlist products products deleted successfully'], 200);
+            $favoriteproducts->delete();
+            return $this->jsonResponse(200, ['message' => 'favorite products products deleted successfully'], 200);
         } catch (Exception $e) {
             return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
         }
