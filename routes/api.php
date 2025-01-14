@@ -42,6 +42,16 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Rutas protegidas para direcciones de usuarios
     Route::apiResource('addresses', UserAddressController::class);
+
+    // Rutas protegidas para listas de favoritos
+    Route::post('/favorites', [FavoriteController::class, 'store']);
+    Route::get('/favorites/{id}', [FavoriteController::class, 'show']);
+    Route::delete('/favorites/{id}', [FavoriteController::class, 'destroy']);
+
+    // Rutas protegidas para productos favoritos
+    Route::post('/favoriteproducts', [FavoriteProductController::class, 'store']);
+    Route::get('/favoriteproducts/{id}', [FavoriteProductController::class, 'show']);
+    Route::delete('/favoriteproducts/{id}', [FavoriteProductController::class, 'destroy']);
 });
 
 // Rutas públicas para productos
@@ -56,17 +66,6 @@ Route::get('/categories/{id}', [CategoryController::class, 'show']);
 Route::get('/categories/slug/{slug}', [CategoryController::class, 'showBySlug']);
 Route::put('/categories/{id}', [CategoryController::class, 'update']);
 Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
-
-// Listas de favoritos
-Route::post('/favorites', [FavoriteController::class, 'create']);
-Route::post('/favorites', [FavoriteController::class, 'store']);
-Route::get('/favorites/{id}', [FavoriteController::class, 'show']);
-Route::delete('/favorites/{id}', [FavoriteController::class, 'destroy']);
-
-// Relación entre listas de favoritos y productos
-Route::post('/favoriteproducts', [FavoriteProductController::class, 'store']);
-Route::get('/favoriteproducts/{id}', [FavoriteProductController::class, 'show']);
-Route::delete('/favoriteproducts/{id}', [FavoriteProductController::class, 'destroy']);
 
 // Opiniones
 Route::get('/reviews', [ReviewController::class, 'index']);

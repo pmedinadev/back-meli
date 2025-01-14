@@ -6,87 +6,103 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\FavoriteProduct;
 use Exception;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class FavoriteProductController extends Controller
 {
-    /**
-     * Handle JSON responses.
-     */
-    private function jsonResponse($status, $data, $code)
+    private function getRules(): array
     {
-        return response()->json(array_merge(['status' => $status], $data), $code);
-    }
-
-    /**
-     * Validate request data.
-     */
-    private function validateRequest(Request $request, array $rules)
-    {
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return $this->jsonResponse(400, ['errors' => $validator->errors()], 400);
-        }
-
-        return null;
+        return [
+            'favorite_id' => 'required|integer|exists:favorites,id',
+            'product_id' => 'required|integer|exists:products,id'
+        ];
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
-        $validationResponse = $this->validateRequest($request, [
-            'favorite_id' => 'required|integer|exists:favorites,id',
-            'product_id' => 'required|integer|exists:products,id'
-        ]);
-
-        if ($validationResponse) {
-            return $validationResponse;
-        }
-
         try {
-            $favoriteproducts = FavoriteProduct::create($request->all());
-            return $this->jsonResponse(201, ['message' => 'favorite products created successfully', 'favoriteproducts' => $favoriteproducts], 201);
+            $validated = $request->validate($this->getRules());
+
+            DB::beginTransaction();
+
+            $favoriteProduct = FavoriteProduct::create($validated);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Producto agregado a favoritos correctamente',
+                'favorite_product' => $favoriteProduct
+            ], Response::HTTP_CREATED);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Error de validación',
+                'errors' => $e->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         } catch (Exception $e) {
-            return $this->jsonResponse(500, ['error' => "Internal Server Error"], 500);
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Error al agregar el producto a favoritos',
+                'error' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id): JsonResponse
     {
         try {
-            $favoriteproducts = FavoriteProduct::find($id);
+            $favoriteProduct = FavoriteProduct::findOrFail($id);
 
-            if (!$favoriteproducts) {
-                return $this->jsonResponse(404, ['error' => 'favorite products not found'], 404);
-            }
-
-            return $this->jsonResponse(200, ['favoriteproducts' => $favoriteproducts], 200);
+            return response()->json([
+                'favorite_product' => $favoriteProduct
+            ]);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Producto favorito no encontrado'
+            ], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
+            return response()->json([
+                'message' => 'Error al obtener el producto favorito',
+                'error' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id): JsonResponse
     {
         try {
-            $favoriteproducts = FavoriteProduct::find($id);
+            DB::beginTransaction();
 
-            if (!$favoriteproducts) {
-                return $this->jsonResponse(404, ['error' => 'favorite products products not found'], 404);
-            }
+            $favoriteProduct = FavoriteProduct::findOrFail($id);
+            $favoriteProduct->delete();
 
-            $favoriteproducts->delete();
-            return $this->jsonResponse(200, ['message' => 'favorite products products deleted successfully'], 200);
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Producto eliminado de favoritos correctamente'
+            ]);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Producto favorito no encontrado'
+            ], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Error al eliminar el producto de favoritos',
+                'error' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

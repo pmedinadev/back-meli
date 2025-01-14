@@ -14,14 +14,15 @@ class FavoriteProduct extends Model
         'product_id'
     ];
 
+    protected $table = 'favorite_products';
+
     public function favorite()
-{
-    return $this->belongsTo(Favorite::class);
-}
+    {
+        return $this->belongsTo(Favorite::class);
+    }
 
-public function product()
-{
-    return $this->belongsTo(Product::class);
-}
-
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
 }

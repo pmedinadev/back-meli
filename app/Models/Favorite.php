@@ -10,9 +10,13 @@ class Favorite extends Model
     use HasFactory;
 
     protected $fillable = [
-      'id',
-      'user_id',
+        'user_id',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function products()
     {
@@ -20,12 +24,8 @@ class Favorite extends Model
             ->withPivot(['id'])
             ->withTimestamps()
             ->with([
-                'photos' => function ($query) {
-                    $query->select('id', 'url', 'public_id', 'product_id');
-                },
-                'user' => function ($query) {
-                    $query->select('id', 'username', 'display_name');
-                }
+                'photos' => fn($query) => $query->select('id', 'url', 'public_id', 'product_id'),
+                'user' => fn($query) => $query->select('id', 'username', 'display_name')
             ])
             ->select([
                 'products.id',
@@ -35,5 +35,4 @@ class Favorite extends Model
                 'products.user_id'
             ]);
     }
-
 }
