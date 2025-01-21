@@ -5,26 +5,27 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Cart extends Model
+class Favorite extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'user_id'
+        'user_id',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'cart_products')
-            ->withPivot(['id', 'quantity'])
+        return $this->belongsToMany(Product::class, 'favorite_products')
+            ->withPivot(['id'])
             ->withTimestamps()
             ->with([
-                'photos' => function ($query) {
-                    $query->select('id', 'url', 'public_id', 'product_id');
-                },
-                'user' => function ($query) {
-                    $query->select('id', 'username', 'display_name');
-                }
+                'photos' => fn($query) => $query->select('id', 'url', 'public_id', 'product_id'),
+                'user' => fn($query) => $query->select('id', 'username', 'display_name')
             ])
             ->select([
                 'products.id',

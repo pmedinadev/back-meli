@@ -32,16 +32,62 @@ class ProductController extends Controller
         return null;
     }
 
+    private function normalizeText($text)
+    {
+        // Convertir a minúsculas
+        $text = mb_strtolower($text);
+
+        // Remover acentos
+        $unwanted_array = [
+            'á' => 'a',
+            'à' => 'a',
+            'ã' => 'a',
+            'â' => 'a',
+            'ä' => 'a',
+            'é' => 'e',
+            'è' => 'e',
+            'ê' => 'e',
+            'ë' => 'e',
+            'í' => 'i',
+            'ì' => 'i',
+            'î' => 'i',
+            'ï' => 'i',
+            'ó' => 'o',
+            'ò' => 'o',
+            'õ' => 'o',
+            'ô' => 'o',
+            'ö' => 'o',
+            'ú' => 'u',
+            'ù' => 'u',
+            'û' => 'u',
+            'ü' => 'u',
+            'ý' => 'y',
+            'ÿ' => 'y',
+            'ñ' => 'n'
+        ];
+
+        return strtr($text, $unwanted_array);
+    }
+
     public function search(Request $request)
     {
         try {
-            $query = $request->get('q');
+            $query = $this->normalizeText($request->get('q'));
 
             $products = Product::with(['photos', 'user'])
-                ->where('title', 'LIKE', "%{$query}%")
-                ->orWhere('description', 'LIKE', "%{$query}%")
+                ->where('status', 'published')
+                ->where(function ($q) use ($query) {
+                    $q->whereRaw('LOWER(UNACCENT(title)) LIKE ?', ["%{$query}%"])
+                        ->orWhereRaw('LOWER(UNACCENT(description)) LIKE ?', ["%{$query}%"]);
+                })
                 ->orderBy('created_at', 'desc')
                 ->get();
+
+            $products = $products->toArray();
+            $products = array_map(function ($product) {
+                $product['href'] = "/{$product['slug']}/p/MLP{$product['id']}";
+                return $product;
+            }, $products);
 
             return $this->jsonResponse(200, ['products' => $products], 200);
         } catch (Exception $e) {
@@ -55,7 +101,7 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Product::with('photos');
+            $query = Product::with(['photos', 'user']);
 
             if ($request->has('status')) {
                 $query->where('status', $request->status);
@@ -65,8 +111,17 @@ class ProductController extends Controller
                 $query->where('user_id', $request->user_id);
             }
 
-            // $products = Product::all();
+            if ($request->has('category_id')) {
+                $query->where('category_id', $request->category_id);
+            }
+
             $products = $query->orderBy('created_at', 'desc')->get();
+
+            // Add href to each product
+            $products = $products->map(function ($product) {
+                $product->href = "/{$product->slug}/p/MLP{$product->id}";
+                return $product;
+            });
 
             return $this->jsonResponse(200, ['products' => $products], 200);
         } catch (Exception $e) {
@@ -114,16 +169,18 @@ class ProductController extends Controller
     public function show(string $id)
     {
         try {
-            $product = Product::with('user', 'photos')->find($id);
+            $product = Product::with('category', 'user', 'photos')->find($id);
 
             if (!$product) {
                 return $this->jsonResponse(404, ['error' => 'Product not found'], 404);
             }
 
+            $product = $product->toArray();
+            $product['href'] = "/{$product['slug']}/p/MLP{$product['id']}";
+
             return $this->jsonResponse(200, ['product' => $product], 200);
         } catch (Exception $e) {
-            return $this->jsonResponse(500, ['error' => $e], 500);
-            // return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
+            return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
         }
     }
 
@@ -162,7 +219,7 @@ class ProductController extends Controller
             $product->update($request->all());
             return $this->jsonResponse(200, ['message' => 'Product updated successfully', 'product' => $product], 200);
         } catch (Exception $e) {
-            return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
+            return $this->jsonResponse(500, ['error' => $e], 500);
         }
     }
 

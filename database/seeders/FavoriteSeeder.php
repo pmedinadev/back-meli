@@ -2,41 +2,41 @@
 
 namespace Database\Seeders;
 
-use App\Models\Wishlist;
+use App\Models\Favorite;
 use Illuminate\Database\Seeder;
 
-class WishlistSeeder extends Seeder
+class FavoriteSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Wishlist::create([
+        Favorite::create([
             'user_id' => 1,
         ]);
-        Wishlist::create([
+        Favorite::create([
             'user_id' => 2,
         ]);
-        Wishlist::create([
+        Favorite::create([
             'user_id' => 3,
         ]);
-        Wishlist::create([
+        Favorite::create([
             'user_id' => 4,
         ]);
-        Wishlist::create([
+        Favorite::create([
             'user_id' => 5,
         ]);
-        Wishlist::create([
+        Favorite::create([
             'user_id' => 6,
         ]);
-        Wishlist::create([
+        Favorite::create([
             'user_id' => 7,
         ]);
-        Wishlist::create([
+        Favorite::create([
             'user_id' => 8,
         ]);
-        Wishlist::create([
+        Favorite::create([
             'user_id' => 9
         ]);
     }

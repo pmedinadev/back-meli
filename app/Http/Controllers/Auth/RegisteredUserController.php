@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Cart;
+use App\Models\Favorite;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -33,8 +34,12 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->string('password')),
         ]);
 
-        $cart = Cart::create([
+        Cart::create([
             'user_id'=>$user->id
+        ]);
+
+        Favorite::create([
+            'user_id' =>$user->id
         ]);
 
         event(new Registered($user));

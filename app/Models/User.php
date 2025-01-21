@@ -52,4 +52,41 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
+
+    public function cart()
+    {
+        return $this->hasOne(Cart::class);
+    }
+
+    protected $appends = ['cart_id', 'favorite_id'];
+
+    public function getCartIdAttribute()
+    {
+        return $this->cart?->id;
+    }
+
+    public function addresses()
+    {
+        return $this->hasMany(UserAddress::class);
+    }
+
+    public function favorite()
+    {
+        return $this->hasOne(Favorite::class);
+    }
+
+    public function getFavoriteIdAttribute()
+    {
+        return $this->favorite?->id;
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function purchases()
+    {
+        return $this->hasMany(Order::class)->whereIn('status', ['completed', 'pending', 'processing']);
+    }
 }

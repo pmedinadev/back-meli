@@ -5,12 +5,13 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\CartProduct;
+use App\Models\Product;
 use Exception;
 use Illuminate\Support\Facades\Validator;
 
-class CartProductController extends Controller	
+class CartProductController extends Controller
 {
-        /**
+    /**
      * Handle JSON responses.
      */
     private function jsonResponse($status, $data, $code)
@@ -38,9 +39,9 @@ class CartProductController extends Controller
     public function store(Request $request)
     {
         $validationResponse = $this->validateRequest($request, [
-            'cart_id' =>'required|integer',
-            'product_id' =>'required|integer',
-            'quantity' => 'required|integer',
+            'cart_id' => 'required|integer',
+            'product_id' => 'required|integer',
+            'quantity' => 'required|integer|min:1',
         ]);
 
         if ($validationResponse) {
@@ -48,10 +49,60 @@ class CartProductController extends Controller
         }
 
         try {
+            $existingCartProduct = CartProduct::where('cart_id', $request->cart_id)
+                ->where('product_id', $request->product_id)
+                ->first();
+
+            $product = Product::find($request->product_id);
+
+            $totalRequestedQuantity = $request->quantity;
+            if ($existingCartProduct) {
+                $totalRequestedQuantity += $existingCartProduct->quantity;
+            }
+
+            if ($totalRequestedQuantity > $product->stock) {
+                return $this->jsonResponse(400, [
+                    'error' => 'No hay suficiente stock disponible'
+                ], 400);
+            }
+
+            if ($product->stock === 1 && $existingCartProduct) {
+                return $this->jsonResponse(400, [
+                    'error' => 'Este producto ya está en tu carrito'
+                ], 400);
+            }
+
+            if ($existingCartProduct) {
+                $newQuantity = $existingCartProduct->quantity + $request->quantity;
+
+                if ($newQuantity > 6) {
+                    return $this->jsonResponse(400, [
+                        'error' => 'No puedes agregar más de 6 unidades de este producto'
+                    ], 400);
+                }
+
+                $existingCartProduct->quantity = $newQuantity;
+                $existingCartProduct->save();
+
+                return $this->jsonResponse(200, [
+                    'message' => 'Cart Product quantity updated successfully',
+                    'cartproduct' => $existingCartProduct
+                ], 200);
+            }
+
+            if ($request->quantity > 6) {
+                return $this->jsonResponse(400, [
+                    'error' => 'No puedes agregar más de 6 unidades de este producto'
+                ], 400);
+            }
+
             $cartproduct = CartProduct::create($request->all());
-            return $this->jsonResponse(201, ['message' => 'Cart Product created successfully', 'cartproduct' => $cartproduct], 201);
+            return $this->jsonResponse(201, [
+                'message' => 'Cart Product created successfully',
+                'cartproduct' => $cartproduct
+            ], 201);
         } catch (Exception $e) {
-            return $this->jsonResponse(500, ['error' => $e], 500);
+            return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
         }
     }
 
@@ -60,10 +111,8 @@ class CartProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $cartproduct = CartpProduct::find($id);
-
         $validationResponse = $this->validateRequest($request, [
-            'quantity' => 'required|integer',
+            'quantity' => 'required|integer|min:1|max:6',
         ]);
 
         if ($validationResponse) {
@@ -77,8 +126,17 @@ class CartProductController extends Controller
                 return $this->jsonResponse(404, ['error' => 'Cart Product not found'], 404);
             }
 
+            if ($request->quantity > 6) {
+                return $this->jsonResponse(400, [
+                    'error' => 'No puedes tener más de 6 unidades de este producto'
+                ], 400);
+            }
+
             $cartproduct->update($request->all());
-            return $this->jsonResponse(200, ['message' => 'Cart Product updated successfully', 'category' => $category], 200);
+            return $this->jsonResponse(200, [
+                'message' => 'Cart Product updated successfully',
+                'cartproduct' => $cartproduct
+            ], 200);
         } catch (Exception $e) {
             return $this->jsonResponse(500, ['error' => 'Internal Server Error'], 500);
         }

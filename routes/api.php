@@ -5,12 +5,15 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\WishlistController;
-use App\Http\Controllers\Api\WishlistProductController;
+use App\Http\Controllers\Api\FavoriteController;
+use App\Http\Controllers\Api\FavoriteProductController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\CartProductController;
+use App\Http\Controllers\Api\MercadoPagoController;
+use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductPhotoController;
+use App\Http\Controllers\Api\UserAddressController;
 use App\Http\Controllers\Auth\TokenController;
 
 // Emisión de tokens para la aplicación móvil
@@ -21,7 +24,7 @@ Route::post('/login', [TokenController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     // Obtener usuario autenticado
     Route::get('/user', function (Request $request) {
-        return $request->user();
+        return $request->user()->makeHidden('cart');
     });
 
     // Ruta de cierre de sesión para la aplicación móvil
@@ -38,7 +41,31 @@ Route::middleware('auth:sanctum')->group(function () {
     // Rutas protegidas para fotos de productos
     Route::post('/productphotos', [ProductPhotoController::class, 'store']);
     Route::delete('/productphotos/{id}', [ProductPhotoController::class, 'destroy']);
+
+    // Rutas protegidas para direcciones de usuarios
+    Route::apiResource('addresses', UserAddressController::class);
+
+    // Rutas protegidas para listas de favoritos
+    Route::post('/favorites', [FavoriteController::class, 'store']);
+    Route::get('/favorites/{id}', [FavoriteController::class, 'show']);
+    Route::delete('/favorites/{id}', [FavoriteController::class, 'destroy']);
+
+    // Rutas protegidas para productos favoritos
+    Route::post('/favoriteproducts', [FavoriteProductController::class, 'store']);
+    Route::get('/favoriteproducts/{id}', [FavoriteProductController::class, 'show']);
+    Route::delete('/favoriteproducts/{id}', [FavoriteProductController::class, 'destroy']);
+
+    // Rutas protegidas para pedidos
+    Route::get('/orders', [OrderController::class, 'index']);
+    Route::post('/orders', [OrderController::class, 'store']);
+    Route::get('/orders/{id}', [OrderController::class, 'show']);
+    Route::get('/orders/{orderId}/products/{productId}', [OrderController::class, 'showItem']);
+    Route::post('/orders/{id}/shipping', [OrderController::class, 'updateShipping']);
+    Route::post('/orders/{id}/preference', [MercadoPagoController::class, 'createPreference']);
 });
+
+// Ruta para manejar los webhooks de Mercado Pago
+Route::post('/webhooks/mercadopago', [MercadoPagoController::class, 'handleWebhook']);
 
 // Rutas públicas para productos
 Route::get('/products/search', [ProductController::class, 'search']);
@@ -49,18 +76,9 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::post('/categories', [CategoryController::class, 'store']);
 Route::get('/categories/{id}', [CategoryController::class, 'show']);
+Route::get('/categories/slug/{slug}', [CategoryController::class, 'showBySlug']);
 Route::put('/categories/{id}', [CategoryController::class, 'update']);
 Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
-
-// Listas de deseos
-Route::post('/wishlists', [WishlistController::class, 'store']);
-Route::get('/wishlists/{id}', [WishlistController::class, 'show']);
-Route::delete('/wishlists/{id}', [WishlistController::class, 'destroy']);
-
-// Relación entre listas de deseos y productos
-Route::post('/wishlistproducts', [WishlistProductController::class, 'store']);
-Route::get('/wishlistproducts/{id}', [WishlistProductController::class, 'show']);
-Route::delete('/wishlistproducts/{id}', [WishlistProductController::class, 'destroy']);
 
 // Opiniones
 Route::get('/reviews', [ReviewController::class, 'index']);
