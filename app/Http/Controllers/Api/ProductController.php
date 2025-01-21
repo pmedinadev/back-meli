@@ -82,7 +82,7 @@ class ProductController extends Controller
                 })
                 ->orderBy('created_at', 'desc')
                 ->get();
-            
+
             $products = $products->toArray();
             $products = array_map(function ($product) {
                 $product['href'] = "/{$product['slug']}/p/MLP{$product['id']}";
@@ -101,7 +101,7 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Product::with('photos');
+            $query = Product::with(['photos', 'user']);
 
             if ($request->has('status')) {
                 $query->where('status', $request->status);
@@ -111,8 +111,17 @@ class ProductController extends Controller
                 $query->where('user_id', $request->user_id);
             }
 
-            // $products = Product::all();
+            if ($request->has('category_id')) {
+                $query->where('category_id', $request->category_id);
+            }
+
             $products = $query->orderBy('created_at', 'desc')->get();
+
+            // Add href to each product
+            $products = $products->map(function ($product) {
+                $product->href = "/{$product->slug}/p/MLP{$product->id}";
+                return $product;
+            });
 
             return $this->jsonResponse(200, ['products' => $products], 200);
         } catch (Exception $e) {

@@ -17,8 +17,9 @@ return new class extends Migration
             $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('seller_id');
             $table->integer('quantity');
-            $table->decimal('price', 10, 2);
-            $table->decimal('subtotal', 10, 2);
+            $table->decimal('price', 12, 2);
+            $table->decimal('shipping_cost', 10, 2);
+            $table->decimal('subtotal', 12, 2);
             $table->timestamps();
         });
     }

@@ -15,9 +15,17 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('order_id');
             $table->unsignedBigInteger('address_id');
-            $table->enum('shipping_method', ['home_delivery', 'pickup_point']);
+            $table->enum('delivery_status', [
+                'pending',
+                'in_transit',
+                'delivered',
+                'cancelled',
+                'returned'
+            ])->default('pending');
             $table->date('estimated_delivery_date');
-            $table->decimal('shipping_cost', 10, 2);
+            $table->timestamp('delivered_at')->nullable();
+            $table->string('tracking_number')->nullable();
+            $table->text('delivery_notes')->nullable();
             $table->timestamps();
         });
     }

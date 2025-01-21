@@ -22,8 +22,10 @@ return new class extends Migration
                 'completed',
                 'failed',
                 'cancelled',
+                'expired',
             ])->default('pending');
-            $table->decimal('total_amount', 10, 2);
+            $table->decimal('total_amount', 12, 2);
+            $table->timestamp('expires_at');
             $table->timestamps();
             $table->softDeletes();
         });

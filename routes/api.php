@@ -10,6 +10,8 @@ use App\Http\Controllers\Api\FavoriteProductController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\CartProductController;
+use App\Http\Controllers\Api\MercadoPagoController;
+use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductPhotoController;
 use App\Http\Controllers\Api\UserAddressController;
 use App\Http\Controllers\Auth\TokenController;
@@ -52,7 +54,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/favoriteproducts', [FavoriteProductController::class, 'store']);
     Route::get('/favoriteproducts/{id}', [FavoriteProductController::class, 'show']);
     Route::delete('/favoriteproducts/{id}', [FavoriteProductController::class, 'destroy']);
+
+    // Rutas protegidas para pedidos
+    Route::get('/orders', [OrderController::class, 'index']);
+    Route::post('/orders', [OrderController::class, 'store']);
+    Route::get('/orders/{id}', [OrderController::class, 'show']);
+    Route::get('/orders/{orderId}/products/{productId}', [OrderController::class, 'showItem']);
+    Route::post('/orders/{id}/shipping', [OrderController::class, 'updateShipping']);
+    Route::post('/orders/{id}/preference', [MercadoPagoController::class, 'createPreference']);
 });
+
+// Ruta para manejar los webhooks de Mercado Pago
+Route::post('/webhooks/mercadopago', [MercadoPagoController::class, 'handleWebhook']);
 
 // Rutas públicas para productos
 Route::get('/products/search', [ProductController::class, 'search']);

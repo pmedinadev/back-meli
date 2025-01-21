@@ -79,4 +79,14 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->favorite?->id;
     }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function purchases()
+    {
+        return $this->hasMany(Order::class)->whereIn('status', ['completed', 'pending', 'processing']);
+    }
 }
